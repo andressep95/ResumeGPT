@@ -1,5 +1,7 @@
 package cl.playground.cv_converter.service;
 
+import cl.playground.cv_converter.config.OpenAIProperties;
+import cl.playground.cv_converter.exception.OpenAIException;
 import cl.playground.cv_converter.model.Resume;
 import cl.playground.cv_converter.util.ChatGPTPromptUtil;
 import cl.playground.cv_converter.util.ClearJsonUtil;
@@ -23,26 +25,25 @@ public class ResumeServiceImpl implements ResumeService {
 
     private final RestTemplate openAiRestTemplate;
     private final ObjectMapper objectMapper;
+    private final OpenAIProperties openAIProperties;
 
     @Autowired
     public ResumeServiceImpl(
         @Qualifier("openAiRestTemplate")
         RestTemplate openAiRestTemplate,
-        ObjectMapper objectMapper) {
+        ObjectMapper objectMapper,
+        OpenAIProperties openAIProperties) {
         this.openAiRestTemplate = openAiRestTemplate;
         this.objectMapper = objectMapper;
+        this.openAIProperties = openAIProperties;
     }
-
 
 
     @Override
     public byte[] processResume(MultipartFile file, String language, String comments) {
         try {
-            // Primero procesamos el CV para obtener el objeto Resume
             String langCode = language.toLowerCase().startsWith("es") ? "es" : "en";
             Resume resume = processResumeData(file, langCode, comments);
-
-            // Luego generamos el PDF usando el ResumeGeneratorUtil
             return ResumeGeneratorUtil.generateResumePDF(resume, language);
         } catch (Exception e) {
             throw new RuntimeException("Error procesando el CV: " + e.getMessage(), e);
@@ -53,47 +54,54 @@ public class ResumeServiceImpl implements ResumeService {
     public Resume processResumeData(MultipartFile file, String language, String comments) {
         try {
             String extractedText = ResumeExtractorUtil.extractResumeContent(file);
-
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", "gpt-4-turbo");
-            requestBody.put("temperature", 0.5);
-
-            Map<String, String> systemMessage = new HashMap<>();
-            systemMessage.put("role", "system");
-            systemMessage.put("content", "Eres un asistente que genera solo respuestas en formato JSON válido, sin marcado adicional ni caracteres de formato.");
-
-            Map<String, String> userMessage = new HashMap<>();
-            userMessage.put("role", "user");
-            userMessage.put("content", ChatGPTPromptUtil.createPrompt(extractedText, language, comments));
-
-            requestBody.put("messages", new Map[]{systemMessage, userMessage});
+            Map<String, Object> requestBody = createOpenAiRequest(extractedText, language, comments);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             Map<String, Object> response = openAiRestTemplate.postForObject(
-                "https://api.openai.com/v1/chat/completions",
+                openAIProperties.getUrl(),
                 new HttpEntity<>(requestBody, headers),
-                Map.class);
+                Map.class
+                                                                           );
 
-            if (response != null && response.containsKey("choices")) {
-                Map<String, Object> firstChoice = (Map<String, Object>) ((java.util.List) response.get("choices")).get(0);
-                Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
-                String jsonResponse = (String) message.get("content");
-
-                // Limpiar y validar el JSON antes de parsearlo
-                String cleanedJson = ClearJsonUtil.cleanJsonResponse(jsonResponse);
-
-                try {
-                    return objectMapper.readValue(cleanedJson, Resume.class);
-                } catch (Exception e) {
-                    throw new RuntimeException("Error parseando el JSON limpio: " + cleanedJson, e);
-                }
-            }
-
-            throw new RuntimeException("No se pudo obtener una respuesta válida de OpenAI");
+            return parseOpenAiResponse(response);
         } catch (Exception e) {
             throw new RuntimeException("Error procesando los datos del CV: " + e.getMessage(), e);
+        }
+    }
+
+    private Map<String, Object> createOpenAiRequest(String extractedText, String language, String comments) {
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", openAIProperties.getModel());
+        requestBody.put("temperature", openAIProperties.getTemperature());
+
+        Map<String, String> systemMessage = new HashMap<>();
+        systemMessage.put("role", "system");
+        systemMessage.put("content", "Eres un asistente que genera solo respuestas en formato JSON válido, sin marcado adicional ni caracteres de formato.");
+
+        Map<String, String> userMessage = new HashMap<>();
+        userMessage.put("role", "user");
+        userMessage.put("content", ChatGPTPromptUtil.createPrompt(extractedText, language, comments));
+
+        requestBody.put("messages", new Map[]{systemMessage, userMessage});
+        return requestBody;
+    }
+
+    private Resume parseOpenAiResponse(Map<String, Object> response) {
+        if (response == null || !response.containsKey("choices")) {
+            throw new OpenAIException("No se pudo obtener una respuesta válida de OpenAI");
+        }
+
+        try {
+            Map<String, Object> firstChoice = (Map<String, Object>) ((java.util.List) response.get("choices")).get(0);
+            Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
+            String jsonResponse = (String) message.get("content");
+
+            String cleanedJson = ClearJsonUtil.cleanJsonResponse(jsonResponse);
+            return objectMapper.readValue(cleanedJson, Resume.class);
+        } catch (Exception e) {
+            throw new OpenAIException("Error parseando la respuesta de OpenAI", e);
         }
     }
 }
