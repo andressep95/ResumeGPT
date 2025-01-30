@@ -1,0 +1,132 @@
+{
+  "personalInfo": {
+    "name": "Andres Sepulveda",
+    "title": "Desarrollador Full Stack Java | Instructor de Bootcamp",
+    "contact": {
+      "phone": "+56 9 3707 8878",
+      "email": "andressep.95@gmail.com",
+      "linkedin": "linkedin.com/in/andressep",
+      "location": {
+        "city": "La Florida",
+        "region": "Santiago de Chile",
+        "country": "Región Metropolitana"
+      }
+    }
+  },
+  "profileSummary": "Desarrollador Full Stack e Instructor especializado en Java y tecnologías web modernas. Amplia experiencia en desarrollo de software y formación técnica, destacando en la implementación de soluciones prácticas, metodologías ágiles y mejores prácticas. Habilidad probada para liderar programas formativos, mentoría personalizada y gestión de proyectos colaborativos en entornos dinámicos.",
+  "education": [
+    {
+      "institution": "Instituto Profesional AIEP",
+      "degree": "Analista Programador Computacional",
+      "period": {
+        "start": "2023",
+        "end": "Present"
+      },
+      "details": [
+        "Especialización en desarrollo de software, arquitecturas modernas y metodologías ágiles"
+      ]
+    }
+  ],
+  "technicalSkills": {
+    "backend": [
+      "Java",
+      "Spring Boot",
+      "APIs REST",
+      "Microservicios"
+    ],
+    "frontend": [
+      "React",
+      "Angular",
+      "Thymeleaf",
+      "Bootstrap"
+    ],
+    "databases": [
+      "PostgreSQL",
+      "MySQL",
+      "Redis"
+    ],
+    "devOps": [
+      "Docker",
+      "Git"
+    ],
+    "methodologies": [
+      "Scrum"
+    ],
+    "languages": [
+      {
+        "language": "Español",
+        "level": "Nativo"
+      },
+      {
+        "language": "Inglés",
+        "level": "Básico"
+      }
+    ]
+  },
+  "professionalExperience": [
+    {
+      "company": "Edutecno",
+      "position": "Instructor de Bootcamp Full Stack Java (Vespertino)",
+      "period": {
+        "start": "Octubre 2024",
+        "end": "Presente"
+      },
+      "responsibilities": [
+        "Capacito en desarrollo de aplicaciones Full Stack utilizando Java y Spring Boot",
+        "Facilito la construcción de bases de datos con PostgreSQL y MySQL",
+        "Lidero proyectos prácticos con énfasis en APIs REST y microservicios"
+      ]
+    },
+    {
+      "company": "Edutecno",
+      "position": "Instructor Senior de Bootcamp Full Stack Java (Diurno)",
+      "period": {
+        "start": "Julio 2024",
+        "end": "Noviembre 2024"
+      },
+      "responsibilities": [
+        "Diseñé e implementé un programa integral de desarrollo Full Stack con Java, JSP y Spring Boot",
+        "Instruí a estudiantes en tecnologías web frontend como Thymeleaf y Bootstrap",
+        "Implementé proyectos prácticos con APIs REST y bases de datos relacionales",
+        "Promoví metodologías ágiles (Scrum) y mejores prácticas en el desarrollo colaborativo"
+      ]
+    },
+    {
+      "company": "Instituto Praxis",
+      "position": "Instructor de Bootcamp Aplicaciones Java (Vespertino)",
+      "period": {
+        "start": "Abril 2024",
+        "end": "Septiembre 2024"
+      },
+      "responsibilities": [
+        "Impartí formación técnica en desarrollo Full Stack con enfoque en Spring Boot",
+        "Guié a estudiantes en la implementación de aplicaciones web y control de versiones con Git",
+        "Diseñé casos prácticos para fortalecer habilidades de desarrollo ágil"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "SQLift - Generador de Clases JPA",
+      "details": [
+        "Herramienta CLI en Java para generar clases JPA/Hibernate desde DDL de PostgreSQL",
+        "Creé ejecutables nativos multiplataforma con GraalVM y un contenedor Docker para facilitar la distribución",
+        "Optimicé flujos de desarrollo en proyectos basados en Hibernate y Spring"
+      ]
+    }
+  ],
+  "professionalCompetencies": [
+    "Liderazgo técnico y mentoría",
+    "Desarrollo de programas formativos",
+    "Gestión de proyectos ágiles",
+    "Resolución de problemas técnicos",
+    "Comunicación efectiva",
+    "Trabajo colaborativo"
+  ],
+  "keyAchievements": [
+    "Diseñé y lideré programas de formación técnica que lograron un 95% de satisfacción estudiantil",
+    "Implementé mejoras en flujos de trabajo en equipos, optimizando tiempos de desarrollo en un 20%",
+    "Creé herramientas internas para la automatización de tareas repetitivas, reduciendo errores humanos"
+  ]
+}
+

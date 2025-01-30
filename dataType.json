@@ -1,0 +1,51 @@
+{
+  "header": {
+    "name": "string",
+    "contact": {
+      "email": "string",
+      "phone": "string"
+    }
+  },
+  "education": [
+    {
+      "institution": "string",
+      "degree": "string",
+      "graduationDate": "string",
+      "achievements": [
+        "string"
+      ],
+      "projects": [
+        "string"
+      ]
+    }
+  ],
+  "technicalSkills": {
+    "categories": [
+      {
+        "skills": [
+          "string"
+        ]
+      }
+    ]
+  },
+  "professionalExperience": [
+    {
+      "company": "string",
+      "location": "string",
+      "position": "string",
+      "period": {
+        "start": "string",
+        "end": "string"
+      },
+      "responsibilities": [
+        "string"
+      ]
+    }
+  ],
+  "certifications": [
+    {
+      "name": "string",
+      "dateObtained": "string"
+    }
+  ]
+}
