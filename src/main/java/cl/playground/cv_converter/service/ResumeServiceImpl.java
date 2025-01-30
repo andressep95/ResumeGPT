@@ -2,6 +2,7 @@ package cl.playground.cv_converter.service;
 
 import cl.playground.cv_converter.model.Resume;
 import cl.playground.cv_converter.util.ChatGPTPromptUtil;
+import cl.playground.cv_converter.util.ClearJsonUtil;
 import cl.playground.cv_converter.util.ResumeExtractorUtil;
 import cl.playground.cv_converter.util.ResumeGeneratorUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,8 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 @Service
 public class ResumeServiceImpl implements ResumeService {
@@ -34,27 +33,7 @@ public class ResumeServiceImpl implements ResumeService {
         this.objectMapper = objectMapper;
     }
 
-    private String cleanJsonResponse(String response) {
-        // Eliminar bloques de código markdown si existen
-        response = response.replaceAll("```json\\s*", "").replaceAll("```\\s*", "");
 
-        // Si el JSON está envuelto en backticks simples, los removemos
-        response = response.replaceAll("`", "");
-
-        // Eliminar espacios en blanco al inicio y final
-        response = response.trim();
-
-        // Si después de la limpieza no comienza con { o [, buscar el primer JSON válido
-        if (!response.startsWith("{") && !response.startsWith("[")) {
-            Pattern pattern = Pattern.compile("\\{.*\\}");
-            Matcher matcher = pattern.matcher(response);
-            if (matcher.find()) {
-                response = matcher.group();
-            }
-        }
-
-        return response;
-    }
 
     @Override
     public byte[] processResume(MultipartFile file, String language, String comments) {
@@ -103,7 +82,7 @@ public class ResumeServiceImpl implements ResumeService {
                 String jsonResponse = (String) message.get("content");
 
                 // Limpiar y validar el JSON antes de parsearlo
-                String cleanedJson = cleanJsonResponse(jsonResponse);
+                String cleanedJson = ClearJsonUtil.cleanJsonResponse(jsonResponse);
 
                 try {
                     return objectMapper.readValue(cleanedJson, Resume.class);
