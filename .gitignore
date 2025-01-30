@@ -1,5 +1,5 @@
 # Archivos específicos del proyecto a ignorar
-/src/main/resources/application.properties-dev
+src/main/resources/application-dev.properties
 /dataType.json
 /format.json
 /test-output/
