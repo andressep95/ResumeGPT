@@ -26,7 +26,6 @@ public class ResumeGeneratorUtil {
     private static final PdfFont FONT_HEADER_ELEMENT;
     private static final float HEADER_SIZE_ELEMENT = 11;
 
-
     private static final PdfFont FONT_BODY;
 
     static {
@@ -192,10 +191,10 @@ public class ResumeGeneratorUtil {
 
             // Proyectos (Projects)
             if (education.getProjects() != null && !education.getProjects().isEmpty()) {
-                Paragraph projectsTitle = new Paragraph(SectionTitles.PROJECTS.getTitle(language) + ":")
+                Paragraph projectsTitle = new Paragraph(SectionTitles.PROJECTS.getTitle(language))
                     .setFont(FONT_BODY)
                     .setFontSize(10)
-                    .setMarginTop(8f)
+                    .setMarginTop(10f)
                     .setMarginBottom(-9)
                     .setBold();
 
@@ -290,16 +289,16 @@ public class ResumeGeneratorUtil {
         document.add(underline);
 
         for (ProfessionalExperience exp : experiences) {
+            Div experienceContainer = new Div()
+                .setKeepTogether(true); // Bloque indivisible
 
-
-            // Añadir la empresa
             Paragraph companyParagraph = new Paragraph(exp.getCompany())
                 .setFont(FONT_HEADER_SECTION)
                 .setFontSize(HEADER_SIZE_ELEMENT)
                 .setMarginBottom(-6f)
                 .setMarginBottom(-2);
 
-            document.add(companyParagraph);
+            experienceContainer.add(companyParagraph);
 
             // Crear una tabla con 2 columnas para la posición y la fecha
             Table expTable = new Table(2)
@@ -326,7 +325,7 @@ public class ResumeGeneratorUtil {
             expTable.addCell(dateCell);
 
             // Agregar la tabla al documento
-            document.add(expTable);
+            experienceContainer.add(expTable);
 
             // Agregar responsabilidades en una lista
             List responsibilities = new List()
@@ -338,46 +337,69 @@ public class ResumeGeneratorUtil {
                 responsibilities.add(new ListItem(responsibility));
             }
 
-            document.add(responsibilities);
+            experienceContainer.add(responsibilities);
+            document.add(experienceContainer);
         }
     }
 
     private static void addCertifications(Document document, java.util.List<Certification> certifications, String language) {
         String title = SectionTitles.CERTIFICATIONS.getTitle(language);
+
+        // Crear un Div para encapsular toda la sección
+        Div sectionContainer = new Div()
+            .setKeepTogether(true);  // Evitar que la sección se divida en varias páginas
+
+        // Título de la sección
         Paragraph sectionTitle = new Paragraph(title)
             .setFont(FONT_HEADER_SECTION)
             .setFontSize(HEADER_SIZE)
             .setTextAlignment(TextAlignment.CENTER)
-            .setMarginBottom(-10f);
+            .setMarginBottom(-10f)
+            .setMarginTop(4);
 
+        // Línea de subrayado
         Paragraph underline = new Paragraph("_".repeat(85))
             .setFont(FONT_BODY)
             .setFontSize(10)
             .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(12);
 
-        document.add(sectionTitle);
-        document.add(underline);
+        sectionContainer.add(sectionTitle);
+        sectionContainer.add(underline);
 
-        Table table = new Table(2).useAllAvailableWidth();
+        // Crear una tabla para las certificaciones con 2 columnas
+        Table table = new Table(2)
+            .useAllAvailableWidth()
+            .setMarginTop(-12);
 
         for (Certification certification : certifications) {
-            Cell nameCell = new Cell().add(new Paragraph(certification.getName())
+            // Celda para el nombre de la certificación (alineada a la izquierda)
+            Cell nameCell = new Cell()
+                .add(new Paragraph(certification.getName())
                     .setFont(FONT_BODY)
-                    .setFontSize(10)
-                    .setTextAlignment(TextAlignment.LEFT))
-                .setBorder(Border.NO_BORDER);
+                    .setFontSize(10))
+                .setBorder(Border.NO_BORDER)  // Sin borde
+                .setTextAlignment(TextAlignment.LEFT);
 
-            Cell dateCell = new Cell().add(new Paragraph(certification.getDateObtained())
+            // Celda para la fecha obtenida (alineada a la derecha)
+            Cell dateCell = new Cell()
+                .add(new Paragraph(certification.getDateObtained())
                     .setFont(FONT_BODY)
-                    .setFontSize(10)
-                    .setTextAlignment(TextAlignment.RIGHT))
-                .setBorder(Border.NO_BORDER);
+                    .setFontSize(10))
+                .setBorder(Border.NO_BORDER)  // Sin borde
+                .setTextAlignment(TextAlignment.RIGHT);
 
+            // Agregar las celdas a la tabla
             table.addCell(nameCell);
             table.addCell(dateCell);
         }
 
-        document.add(table);
+        // Agregar la tabla al contenedor de la sección
+        sectionContainer.add(table);
+
+        // Agregar la sección completa al documento
+        document.add(sectionContainer);
     }
+
+
 }

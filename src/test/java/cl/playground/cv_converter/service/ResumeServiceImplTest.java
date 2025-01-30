@@ -66,7 +66,8 @@ class ResumeServiceImplTest {
                 "Tengo certificaciones de Github Foundation en donde obtuve distintas habilidades como manejo de " +
                 "repositorios, manejo de CI/CD y gestion de proyectos Octubre 2024.\n" +
                 "Certificacion de Java Associate de Oracle tomando conocimientos basicos de programacion en el " +
-                "lenguaje Enero 2025.");
+                "lenguaje Enero 2025." +
+                "Tengo tambien un proyecto llamado SQLift que toma codigo de sentencias DDL de bases de datos y construye las entidades en Java con JPA e Hibernate");
 
         // 4. Verificaciones básicas
         assertNotNull(pdfResult);

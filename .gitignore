@@ -1,33 +1,56 @@
-HELP.md
+# Archivos específicos del proyecto a ignorar
+/src/main/resources/application.properties
+/dataType.json
+/format.json
+/test-output/
+
+# Archivos generados por Maven
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+# Archivos de compilación
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
 
-### IntelliJ IDEA ###
-.idea
-*.iws
+# Archivos de IDE
+.idea/
 *.iml
+*.iws
 *.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+.classpath
+.project
+.settings/
 .vscode/
+bin/
+.factorypath
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de log
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Exclusiones específicas de tests
+/src/test/resources/generated_cv.pdf
+**/surefire-reports/
+**/failsafe-reports/
+**/test-results/
+
+# Archivos del wrapper de Maven (si no quieres incluirlos)
+mvnw
+mvnw.cmd

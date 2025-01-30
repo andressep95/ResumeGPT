@@ -31,6 +31,7 @@ public class ChatGPTPromptUtil {
                 
                 2. Reglas de contenido:
                 - Traducir TODO al %s
+                - Prestar atencion a los proyectos
                 - Fechas en formato MesAbr AÑO (Ej: Feb 2020)
                 - Orden descendente por fechas
                 - No campos vacíos, nulls, "Not Provided" o arrays vacíos
