@@ -7,11 +7,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Arrays;
+
 @Configuration
 public class CorsConfig {
 
     @Value("${cors.allowed-origins}")
-    private String allowedOrigins;
+    private String[] allowedOrigins;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -28,6 +30,6 @@ public class CorsConfig {
 
     @PostConstruct
     public void init() {
-        System.out.println("Allowed Origins: " + allowedOrigins);
+        System.out.println("Allowed Origins: " + Arrays.asList(allowedOrigins));
     }
 }
