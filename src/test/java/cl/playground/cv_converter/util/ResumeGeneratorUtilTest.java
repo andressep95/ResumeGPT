@@ -83,6 +83,7 @@ class ResumeGeneratorUtilTest {
         );
 
         // Professional Experience 3
+
         ProfessionalExperience exp3 = new ProfessionalExperience(
             "Instituto Praxis",
             "Not Provided",

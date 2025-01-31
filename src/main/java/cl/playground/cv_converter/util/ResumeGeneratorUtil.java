@@ -18,25 +18,8 @@ import java.io.IOException;
 
 public class ResumeGeneratorUtil {
 
-    // Encabezados de secciones
-    private static final PdfFont FONT_HEADER_SECTION;
     private static final float HEADER_SIZE = 14;
-
-    // Encabezados de elementos
-    private static final PdfFont FONT_HEADER_ELEMENT;
     private static final float HEADER_SIZE_ELEMENT = 11;
-
-    private static final PdfFont FONT_BODY;
-
-    static {
-        try {
-            FONT_HEADER_SECTION = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-            FONT_HEADER_ELEMENT = PdfFontFactory.createFont(StandardFonts.HELVETICA);
-            FONT_BODY = PdfFontFactory.createFont(StandardFonts.HELVETICA);
-        } catch (IOException e) {
-            throw new RuntimeException("Error initializing fonts", e);
-        }
-    }
 
     private enum SectionTitles {
         EDUCATION("Education", "Educación"),
@@ -66,12 +49,15 @@ public class ResumeGeneratorUtil {
             Document document = new Document(pdf, PageSize.A4);  // Página tamaño A4
             document.setMargins(20, 60, 50, 60);
 
+            PdfFont fontHeaderSection = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+            PdfFont fontHeaderElement = PdfFontFactory.createFont(StandardFonts.HELVETICA);
+            PdfFont fontBody = PdfFontFactory.createFont(StandardFonts.HELVETICA);
 
-            addHeader(document, resume.getHeader());
-            addEducation(document, resume.getEducation(), language);
-            addTechnicalSkills(document, resume.getTechnicalSkills(), language);
-            addProfessionalExperience(document, resume.getProfessionalExperience(), language);
-            addCertifications(document, resume.getCertifications(), language);
+            addHeader(document, resume.getHeader(), fontHeaderSection, fontBody);
+            addEducation(document, resume.getEducation(), language, fontHeaderSection, fontHeaderElement, fontBody);
+            addTechnicalSkills(document, resume.getTechnicalSkills(), language, fontHeaderSection, fontBody);
+            addProfessionalExperience(document, resume.getProfessionalExperience(), language, fontHeaderSection, fontBody);
+            addCertifications(document, resume.getCertifications(), language, fontHeaderSection, fontBody);
 
 
             document.close();
@@ -82,27 +68,27 @@ public class ResumeGeneratorUtil {
         }
     }
 
-    private static void addHeader(Document document, Header header) {
+    private static void addHeader(Document document, Header header, PdfFont fontHeaderSection, PdfFont fontBody) {
         if (header == null) {
             throw new IllegalArgumentException("Header cannot be null");
         }
 
         // Configurar el separador con desplazamiento vertical
         Text separator = new Text(" • ")
-            .setFont(FONT_BODY)
+            .setFont(fontBody)
             .setFontSize(18)
             .setTextRise(-3f);  // Ajuste para centrado vertical
 
         Paragraph headerParagraph = new Paragraph()
             .add(new Text(header.getName() + "\n")
-                .setFont(FONT_HEADER_SECTION)
+                .setFont(fontHeaderSection)
                 .setFontSize(16))
             .add(new Text(header.getContact().getEmail())
-                .setFont(FONT_BODY)
+                .setFont(fontBody)
                 .setFontSize(12))
             .add(separator)
             .add(new Text(header.getContact().getPhone())
-                .setFont(FONT_BODY)
+                .setFont(fontBody)
                 .setFontSize(12))
             .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(20f);
@@ -110,18 +96,22 @@ public class ResumeGeneratorUtil {
         document.add(headerParagraph);
     }
 
-    private static void addEducation(Document document, java.util.List<Education> educationList, String language) {
+    private static void addEducation(Document document, java.util.List<Education> educationList, String language, PdfFont fontHeaderSection, PdfFont fontHeaderElement, PdfFont fontBody) {
+        if (educationList == null || educationList.isEmpty()) {
+            return;
+        }
+
         // Título centrado
         String title = SectionTitles.EDUCATION.getTitle(language);
         Paragraph sectionTitle = new Paragraph(title)
-            .setFont(FONT_HEADER_SECTION)
+            .setFont(fontHeaderSection)
             .setFontSize(HEADER_SIZE)
             .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(-10f);
 
         // Línea de subrayado
         Paragraph underline = new Paragraph("_".repeat(85))
-            .setFont(FONT_BODY)
+            .setFont(fontBody)
             .setFontSize(10)
             .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(12);
@@ -133,7 +123,7 @@ public class ResumeGeneratorUtil {
 
             // Nombre de la institución en negrita
             Paragraph institution = new Paragraph(education.getInstitution())
-                .setFont(FONT_HEADER_ELEMENT)
+                .setFont(fontHeaderElement)
                 .setFontSize(HEADER_SIZE_ELEMENT)
                 .setBold()
                 .setMarginBottom(-2f)
@@ -152,7 +142,7 @@ public class ResumeGeneratorUtil {
 
             // Celda para Degree, alineada a la izquierda
             Cell degreeCell = new Cell().add(new Paragraph(degree)
-                .setFont(FONT_BODY)
+                .setFont(fontBody)
                 .setFontSize(10)
                 .setTextAlignment(TextAlignment.LEFT)
                 .setMarginTop(0)
@@ -161,7 +151,7 @@ public class ResumeGeneratorUtil {
 
             // Celda para Graduation Date, alineada a la derecha
             Cell dateCell = new Cell().add(new Paragraph(graduationDate)
-                .setFont(FONT_BODY)
+                .setFont(fontBody)
                 .setFontSize(10)
                 .setTextAlignment(TextAlignment.RIGHT)
                 .setMarginTop(0)
@@ -183,7 +173,7 @@ public class ResumeGeneratorUtil {
                     Paragraph item = new Paragraph()
                         .setMarginBottom(-10)
                         .add(new Text("•   ").setFontSize(14).setTextRise(-2f))  // Punto más grande
-                        .add(new Text(achievement).setFont(FONT_BODY).setFontSize(10)); // Texto normal
+                        .add(new Text(achievement).setFont(fontBody).setFontSize(10)); // Texto normal
 
                     document.add(item);
                 }
@@ -192,7 +182,7 @@ public class ResumeGeneratorUtil {
             // Proyectos (Projects)
             if (education.getProjects() != null && !education.getProjects().isEmpty()) {
                 Paragraph projectsTitle = new Paragraph(SectionTitles.PROJECTS.getTitle(language))
-                    .setFont(FONT_BODY)
+                    .setFont(fontBody)
                     .setFontSize(10)
                     .setMarginTop(10f)
                     .setMarginBottom(-9)
@@ -203,7 +193,7 @@ public class ResumeGeneratorUtil {
                 for (String project : education.getProjects()) {
                     Paragraph item = new Paragraph()
                         .add(new Text("•   ").setFontSize(14).setTextRise(-2f))  // Punto más grande
-                        .add(new Text(project).setFont(FONT_BODY).setFontSize(10)); // Texto normal
+                        .add(new Text(project).setFont(fontBody).setFontSize(10)); // Texto normal
 
                     document.add(item);
                 }
@@ -214,17 +204,21 @@ public class ResumeGeneratorUtil {
         }
     }
 
-    private static void addTechnicalSkills(Document document, TechnicalSkills technicalSkills, String language) {
+    private static void addTechnicalSkills(Document document, TechnicalSkills technicalSkills, String language, PdfFont fontHeaderSection, PdfFont fontBody) {
+        if (technicalSkills == null || technicalSkills.getCategories().isEmpty()) {
+            return;
+        }
+
         String title = SectionTitles.TECHNICAL_SKILLS.getTitle(language);
         Paragraph sectionTitle = new Paragraph(title)
-            .setFont(FONT_HEADER_SECTION)
+            .setFont(fontHeaderSection)
             .setFontSize(HEADER_SIZE)
             .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(-10f);
 
         // Línea de subrayado
         Paragraph underline = new Paragraph("_".repeat(85))
-            .setFont(FONT_BODY)
+            .setFont(fontBody)
             .setFontSize(10)
             .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(0);
@@ -241,13 +235,13 @@ public class ResumeGeneratorUtil {
             for (String skill : category.getSkills()) {
                 // Crear el punto con fuente 14
                 Text bullet = new Text("• ")
-                    .setFont(FONT_BODY)
+                    .setFont(fontBody)
                     .setFontSize(14)
                     .setTextRise(-2f);  // Ajusta la altura del punto
 
                 // Crear el contenido con fuente 10
                 Text skillText = new Text(skill)
-                    .setFont(FONT_BODY)
+                    .setFont(fontBody)
                     .setFontSize(10);
 
                 // Crear el párrafo con el punto y el texto
@@ -269,10 +263,14 @@ public class ResumeGeneratorUtil {
         document.add(skillsTable);
     }
 
-    private static void addProfessionalExperience(Document document, java.util.List<ProfessionalExperience> experiences, String language) {
+    private static void addProfessionalExperience(Document document, java.util.List<ProfessionalExperience> experiences, String language, PdfFont fontHeaderSection, PdfFont fontBody) {
+        if (experiences == null || experiences.isEmpty()) {
+            return;
+        }
+
         String title = SectionTitles.PROFESSIONAL_EXPERIENCE.getTitle(language);
         Paragraph sectionTitle = new Paragraph(title)
-            .setFont(FONT_HEADER_SECTION)
+            .setFont(fontHeaderSection)
             .setFontSize(HEADER_SIZE)
             .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(-10f)
@@ -280,7 +278,7 @@ public class ResumeGeneratorUtil {
 
         // Línea de subrayado
         Paragraph underline = new Paragraph("_".repeat(85))
-            .setFont(FONT_BODY)
+            .setFont(fontBody)
             .setFontSize(10)
             .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(0);
@@ -293,7 +291,7 @@ public class ResumeGeneratorUtil {
                 .setKeepTogether(true); // Bloque indivisible
 
             Paragraph companyParagraph = new Paragraph(exp.getCompany())
-                .setFont(FONT_HEADER_SECTION)
+                .setFont(fontHeaderSection)
                 .setFontSize(HEADER_SIZE_ELEMENT)
                 .setMarginBottom(-6f)
                 .setMarginBottom(-2);
@@ -307,7 +305,7 @@ public class ResumeGeneratorUtil {
 
             // Celda para la posición
             Cell positionCell = new Cell().add(new Paragraph(exp.getPosition())
-                    .setFont(FONT_BODY)
+                    .setFont(fontBody)
                     .setFontSize(12))
                 .setBorder(Border.NO_BORDER)
                 .setTextAlignment(TextAlignment.LEFT);
@@ -315,7 +313,7 @@ public class ResumeGeneratorUtil {
             // Celda para la fecha, alineada a la derecha
             String dateRange = exp.getPeriod().getStart() + " - " + exp.getPeriod().getEnd();
             Cell dateCell = new Cell().add(new Paragraph(dateRange)
-                    .setFont(FONT_BODY)
+                    .setFont(fontBody)
                     .setFontSize(10))
                 .setBorder(Border.NO_BORDER)
                 .setTextAlignment(TextAlignment.RIGHT);
@@ -342,16 +340,21 @@ public class ResumeGeneratorUtil {
         }
     }
 
-    private static void addCertifications(Document document, java.util.List<Certification> certifications, String language) {
+    private static void addCertifications(Document document, java.util.List<Certification> certifications, String language, PdfFont fontHeaderSection, PdfFont fontBody) {
+        if (certifications == null || certifications.isEmpty()) {
+            return; // No agregar la sección si no hay datos
+        }
+
         String title = SectionTitles.CERTIFICATIONS.getTitle(language);
 
         // Crear un Div para encapsular toda la sección
         Div sectionContainer = new Div()
-            .setKeepTogether(true);  // Evitar que la sección se divida en varias páginas
+            .setKeepTogether(true)
+            .setMarginTop(8);  // Evitar que la sección se divida en varias páginas
 
         // Título de la sección
         Paragraph sectionTitle = new Paragraph(title)
-            .setFont(FONT_HEADER_SECTION)
+            .setFont(fontHeaderSection)
             .setFontSize(HEADER_SIZE)
             .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(-10f)
@@ -359,7 +362,7 @@ public class ResumeGeneratorUtil {
 
         // Línea de subrayado
         Paragraph underline = new Paragraph("_".repeat(85))
-            .setFont(FONT_BODY)
+            .setFont(fontBody)
             .setFontSize(10)
             .setTextAlignment(TextAlignment.CENTER)
             .setMarginBottom(12);
@@ -376,7 +379,7 @@ public class ResumeGeneratorUtil {
             // Celda para el nombre de la certificación (alineada a la izquierda)
             Cell nameCell = new Cell()
                 .add(new Paragraph(certification.getName())
-                    .setFont(FONT_BODY)
+                    .setFont(fontBody)
                     .setFontSize(10))
                 .setBorder(Border.NO_BORDER)  // Sin borde
                 .setTextAlignment(TextAlignment.LEFT);
@@ -384,7 +387,7 @@ public class ResumeGeneratorUtil {
             // Celda para la fecha obtenida (alineada a la derecha)
             Cell dateCell = new Cell()
                 .add(new Paragraph(certification.getDateObtained())
-                    .setFont(FONT_BODY)
+                    .setFont(fontBody)
                     .setFontSize(10))
                 .setBorder(Border.NO_BORDER)  // Sin borde
                 .setTextAlignment(TextAlignment.RIGHT);

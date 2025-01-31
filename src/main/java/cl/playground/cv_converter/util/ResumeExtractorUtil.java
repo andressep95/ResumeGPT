@@ -26,5 +26,4 @@ public class ResumeExtractorUtil {
             return stripper.getText(document);
         }
     }
-
 }
