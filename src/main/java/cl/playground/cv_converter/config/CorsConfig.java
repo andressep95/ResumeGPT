@@ -27,9 +27,4 @@ public class CorsConfig {
             }
         };
     }
-
-    @PostConstruct
-    public void init() {
-        System.out.println("Allowed Origins: " + Arrays.asList(allowedOrigins));
-    }
 }

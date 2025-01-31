@@ -15,8 +15,7 @@ public class ChatGPTPromptUtil {
                         "institution": "string",
                         "degree": "string",
                         "graduationDate": "MesAbr AÑO",
-                        "achievements": ["string"],
-                        "projects": ["string"]
+                        "achievements": ["string"]
                     }],
                     "technicalSkills": {"categories": [{"skills": ["string"]}]},
                     "professionalExperience": [{
@@ -26,7 +25,8 @@ public class ChatGPTPromptUtil {
                         "responsibilities": ["string"],
                         "location": "string"
                     }],
-                    "certifications": [{"name": "string", "dateObtained": "MesAbr AÑO"}]
+                    "certifications": [{"name": "string", "dateObtained": "MesAbr AÑO"}],
+                    "projects": [{"name": "string", "description": "string", "technologies": ["string"]}]
                 }
                 
                 2. Reglas de contenido:

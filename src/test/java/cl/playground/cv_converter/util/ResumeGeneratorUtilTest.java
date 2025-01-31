@@ -25,7 +25,6 @@ class ResumeGeneratorUtilTest {
             "Instituto Profesional AIEP",
             "Computational Programmer Analyst",
             "Present",
-            Collections.emptyList(),
             Collections.emptyList()
         );
 
@@ -38,8 +37,7 @@ class ResumeGeneratorUtilTest {
                 "Mastered essential Git commands and workflows",
                 "Understood GitHub repository management",
                 "Implemented CI/CD pipelines with GitHub Actions"
-                         ),
-            Collections.emptyList()
+                         )
         );
 
         // Technical Skills
@@ -100,12 +98,24 @@ class ResumeGeneratorUtilTest {
         Certification cert1 = new Certification("GitHub Foundations Certification", "Julio 2024");
         Certification cert2 = new Certification("Oracle Certified Java Programmer (OCPJP)", "Enero 2025");
 
+        Project pro1 = new Project(
+            "SQLift",
+            "Generador de entidades Java con JPA e Hibernate a partir de un esquema de base de datos Postgres.",
+            Arrays.asList("Java", "GraalVM", "Github CI/CD", "Docker")
+        );
+        Project pro2 = new Project(
+            "ResumeGPT",
+            "Formatea CVs a formato Hardvard utilizando inteligencia artificial, a traves de extraccion de datos, modelado de informacion y generacion de texto.",
+            Arrays.asList("Java", "Spring boot", "Docker", "Angular 19")
+        );
+
         return new Resume(
             header,
             Arrays.asList(education1, education2), // Se agregan ambas formaciones
             technicalSkills,
             Arrays.asList(exp1, exp2, exp3),
-            Arrays.asList(cert1, cert2)
+            Arrays.asList(cert1, cert2),
+            Arrays.asList(pro1, pro2)
         );
     }
 

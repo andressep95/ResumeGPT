@@ -9,20 +9,23 @@ public class Resume {
     private TechnicalSkills technicalSkills;
     private List<ProfessionalExperience> professionalExperience;
     private List<Certification> certifications;
+    private List<Project> projects;
 
     public Resume() {
         this.education = new ArrayList<>();
         this.technicalSkills = new TechnicalSkills();
         this.professionalExperience = new ArrayList<>();
         this.certifications = new ArrayList<>();
+        this.projects = new ArrayList<>();
     }
 
-    public Resume(Header header, List<Education> education, TechnicalSkills technicalSkills, List<ProfessionalExperience> professionalExperience, List<Certification> certifications) {
+    public Resume(Header header, List<Education> education, TechnicalSkills technicalSkills, List<ProfessionalExperience> professionalExperience, List<Certification> certifications, List<Project> projects) {
         this.header = header;
         this.education = education;
         this.technicalSkills = technicalSkills;
         this.professionalExperience = professionalExperience;
         this.certifications = certifications;
+        this.projects = projects;
     }
 
     public Header getHeader() {
@@ -65,6 +68,14 @@ public class Resume {
         this.certifications = certifications;
     }
 
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
+    }
+
     @Override
     public String toString() {
         return "Resume{" +
@@ -73,6 +84,7 @@ public class Resume {
             ", technicalSkills=" + technicalSkills +
             ", professionalExperience=" + professionalExperience +
             ", certifications=" + certifications +
+            ", projects=" + projects +
             '}';
     }
 }

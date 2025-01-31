@@ -13,9 +13,6 @@
       "graduationDate": "string",
       "achievements": [
         "string"
-      ],
-      "projects": [
-        "string"
       ]
     }
   ],
@@ -46,6 +43,15 @@
     {
       "name": "string",
       "dateObtained": "string"
+    }
+  ],
+  "projects": [
+    {
+      "name": "string",
+      "description": "string",
+      "technologies": [
+        "string"
+      ]
     }
   ]
 }

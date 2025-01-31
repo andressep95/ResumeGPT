@@ -58,7 +58,7 @@ public class ResumeGeneratorUtil {
             addTechnicalSkills(document, resume.getTechnicalSkills(), language, fontHeaderSection, fontBody);
             addProfessionalExperience(document, resume.getProfessionalExperience(), language, fontHeaderSection, fontBody);
             addCertifications(document, resume.getCertifications(), language, fontHeaderSection, fontBody);
-
+            addProjects(document, resume.getProjects(), language, fontHeaderSection, fontBody);
 
             document.close();
             return baos.toByteArray();
@@ -107,6 +107,7 @@ public class ResumeGeneratorUtil {
             .setFont(fontHeaderSection)
             .setFontSize(HEADER_SIZE)
             .setTextAlignment(TextAlignment.CENTER)
+            .setMarginTop(-8)
             .setMarginBottom(-10f);
 
         // Línea de subrayado
@@ -179,26 +180,6 @@ public class ResumeGeneratorUtil {
                 }
             }
 
-            // Proyectos (Projects)
-            if (education.getProjects() != null && !education.getProjects().isEmpty()) {
-                Paragraph projectsTitle = new Paragraph(SectionTitles.PROJECTS.getTitle(language))
-                    .setFont(fontBody)
-                    .setFontSize(10)
-                    .setMarginTop(10f)
-                    .setMarginBottom(-9)
-                    .setBold();
-
-                document.add(projectsTitle);
-
-                for (String project : education.getProjects()) {
-                    Paragraph item = new Paragraph()
-                        .add(new Text("•   ").setFontSize(14).setTextRise(-2f))  // Punto más grande
-                        .add(new Text(project).setFont(fontBody).setFontSize(10)); // Texto normal
-
-                    document.add(item);
-                }
-            }
-
             // Espacio entre elementos
             document.add(new Paragraph("\n"));
         }
@@ -221,7 +202,7 @@ public class ResumeGeneratorUtil {
             .setFont(fontBody)
             .setFontSize(10)
             .setTextAlignment(TextAlignment.CENTER)
-            .setMarginBottom(0);
+            .setMarginBottom(-4);
 
         document.add(sectionTitle);
         document.add(underline);
@@ -404,5 +385,59 @@ public class ResumeGeneratorUtil {
         document.add(sectionContainer);
     }
 
+    private static void addProjects(Document document, java.util.List<Project> projects, String language, PdfFont fontHeaderSection, PdfFont fontBody) {
+        if (projects == null || projects.isEmpty()) {
+            return;
+        }
 
+        String title = SectionTitles.PROJECTS.getTitle(language);
+
+        Div sectionContainer = new Div()
+            .setKeepTogether(true)
+            .setMarginTop(10);
+
+        Paragraph sectionTitle = new Paragraph(title)
+            .setFont(fontHeaderSection)
+            .setFontSize(HEADER_SIZE)
+            .setTextAlignment(TextAlignment.CENTER)
+            .setMarginBottom(-10f)
+            .setMarginTop(4);
+
+        Paragraph underline = new Paragraph("_".repeat(85))
+            .setFont(fontBody)
+            .setFontSize(10)
+            .setTextAlignment(TextAlignment.CENTER)
+            .setMarginBottom(-2);
+
+        sectionContainer.add(sectionTitle);
+        sectionContainer.add(underline);
+
+        for (Project project : projects) {
+            // Nombre del proyecto en negrita
+            Paragraph projectName = new Paragraph(project.getName())
+                .setFont(fontHeaderSection)
+                .setFontSize(10)
+                .setBold()
+                .setMarginBottom(0);
+
+            // Descripción del proyecto
+            Paragraph projectDescription = new Paragraph(project.getDescription())
+                .setFont(fontBody)
+                .setFontSize(10)
+                .setMarginTop(0)
+                .setMarginBottom(2);
+
+            // Tecnologías en cursiva
+            Paragraph projectTechnologies = new Paragraph("Technologies: " + String.join(", ", project.getTechnologies()))
+                .setFont(fontBody)
+                .setFontSize(9)
+                .setItalic()
+                .setMarginTop(0);
+
+            sectionContainer.add(projectName);
+            sectionContainer.add(projectDescription);
+            sectionContainer.add(projectTechnologies);
+        }
+        document.add(sectionContainer);
+    }
 }

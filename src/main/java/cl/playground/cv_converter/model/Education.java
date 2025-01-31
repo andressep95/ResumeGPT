@@ -7,17 +7,15 @@ public class Education {
     private String degree;
     private String graduationDate;
     private List<String> achievements;
-    private List<String> projects;
 
     public Education() {
     }
 
-    public Education(String institution, String degree, String graduationDate, List<String> achievements, List<String> projects) {
+    public Education(String institution, String degree, String graduationDate, List<String> achievements) {
         this.institution = institution;
         this.degree = degree;
         this.graduationDate = graduationDate;
         this.achievements = achievements;
-        this.projects = projects;
     }
 
     public String getInstitution() {
@@ -52,14 +50,6 @@ public class Education {
         this.achievements = achievements;
     }
 
-    public List<String> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(List<String> projects) {
-        this.projects = projects;
-    }
-
     @Override
     public String toString() {
         return "Education{" +
@@ -67,7 +57,6 @@ public class Education {
             ", degree='" + degree + '\'' +
             ", graduationDate='" + graduationDate + '\'' +
             ", achievements=" + achievements +
-            ", projects=" + projects +
             '}';
     }
 }
