@@ -94,8 +94,7 @@ public class ResumeServiceImpl implements ResumeService {
         requestBody.put("temperature", openAIProperties.getTemperature());
 
         List<Map<String, String>> messages = List.of(
-            Map.of("role", "system", "content", "Eres un asistente que genera solo respuestas en formato JSON válido," +
-                " sin marcado adicional ni caracteres de formato adicional."),
+            Map.of("role", "system", "content", "Eres un asistente que genera solo respuestas en formato JSON válido, sin marcado adicional ni caracteres de formato adicional."),
             Map.of("role", "user", "content", ChatGPTPromptUtil.createPrompt(extractedText, language, comments))
                                                     );
 
