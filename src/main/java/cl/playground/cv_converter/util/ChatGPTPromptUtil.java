@@ -1,9 +1,14 @@
 package cl.playground.cv_converter.util;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 public class ChatGPTPromptUtil {
 
     public static String createPrompt(String resumeText, String language, String comments) {
         String targetLanguage = "es".equalsIgnoreCase(language) ? "español" : "inglés";
+        String currentDate = getCurrentDate();
 
         return String.format("""
                 Generar JSON válido en idioma %s usando EXCLUSIVAMENTE datos del CV. Reglas estrictas:
@@ -34,6 +39,7 @@ public class ChatGPTPromptUtil {
                 - FORMATO DE FECHAS (todas como string):
                   • ÚNICAMENTE formato "MMM YYYY" como string (Ej: "Feb 2020", "Mar 2024")
                   • Las fechas deben ir entre comillas como strings
+                  • Para fecha actual usar exactamente: "%s"
                   • Para fecha actual usar el mes y año actual como string (NO usar "present", "actual", "current" ni similares)
                   • MMM = Tres letras de mes con primera mayúscula
                   • YYYY = Año en 4 dígitos
@@ -64,6 +70,24 @@ public class ChatGPTPromptUtil {
                 """,
             targetLanguage.toUpperCase(),
             targetLanguage.toUpperCase(),
+            currentDate,
             resumeText,
             comments != null ? comments : "Ninguno");
-    }}
+    }
+
+    private static String getCurrentDate() {
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter
+            .ofPattern("MMM yyyy", new Locale("es"))
+            .withLocale(Locale.forLanguageTag("es"));
+
+        String formattedDate = now.format(formatter);
+        String month = formattedDate.substring(0, 3);
+        String year = formattedDate.substring(4);
+
+        // Asegurar que el mes tenga la primera letra en mayúscula
+        month = month.substring(0, 1).toUpperCase() + month.substring(1).toLowerCase();
+
+        return month + " " + year;
+    }
+}
