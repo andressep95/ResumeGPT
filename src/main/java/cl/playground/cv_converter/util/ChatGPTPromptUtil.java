@@ -22,7 +22,7 @@ public class ChatGPTPromptUtil {
                         "graduationDate": "string",
                         "achievements": ["string"]
                     }],
-                    "technicalSkills": {"skills": ["string"]},
+                    "technicalSkills": {"skills": ["string"]}, // Cada elemento debe ser UNA ÚNICA palabra
                     "professionalExperience": [{
                         "company": "string",
                         "position": "string",
@@ -45,6 +45,12 @@ public class ChatGPTPromptUtil {
                   • YYYY = Año en 4 dígitos
                   • Un espacio entre MMM y YYYY
                   • Ejemplos válidos: "Ene 2024", "Feb 2023", "Dic 2022"
+                - TECHNICALSKILLS:
+                 • Cada elemento del array skills debe ser UNA ÚNICA palabra
+                 • No usar frases ni múltiples palabras por elemento
+                 • NO usar guiones ni espacios entre palabras
+                 • Ejemplos válidos: ["Java", "Python", "SQL", "Docker"]
+                 • Ejemplos NO válidos: ["Java Spring", "Machine Learning", "Data Science"]
                 - ORDENAMIENTO:
                   • Education: ordenar por graduationDate descendente
                   • ProfessionalExperience: ordenar por period.start descendente
