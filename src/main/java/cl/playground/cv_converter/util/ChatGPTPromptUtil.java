@@ -14,37 +14,48 @@ public class ChatGPTPromptUtil {
                     "education": [{
                         "institution": "string",
                         "degree": "string",
-                        "graduationDate": "MesAbr AÑO",
+                        "graduationDate": "MMM YYYY",
                         "achievements": ["string"]
                     }],
                     "technicalSkills": {"skills": ["string"]},
                     "professionalExperience": [{
                         "company": "string",
                         "position": "string",
-                        "period": {"start": "MesAbr AÑO", "end": "MesAbr AÑO"},
+                        "period": {"start": "MMM YYYY", "end": "MMM YYYY"},
                         "responsibilities": ["string"],
                         "location": "string"
                     }],
-                    "certifications": [{"name": "string", "dateObtained": "MesAbr AÑO"}],
+                    "certifications": [{"name": "string", "dateObtained": "MMM YYYY"}],
                     "projects": [{"name": "string", "description": "string", "technologies": ["string"]}]
                 }
                 
-                2. Reglas de contenido:
+                2. Reglas de contenido OBLIGATORIAS:
                 - Traducir TODO al %s
-                - Prestar atencion a los proyectos
-                - Fechas en formato MesAbr AÑO (Ej: Feb 2020)
-                - Orden descendente por fechas
-                - No campos vacíos, nulls, "Not Provided" o arrays vacíos
-                - Si falta información obligatoria en objeto, omitirlo
-                - Priorizar información CV, integrar comentarios solo en:
-                  • education: información adicional académica
+                - FORMATO DE FECHAS:
+                  • ÚNICAMENTE formato "MMM YYYY" (Ej: Feb 2020, Mar 2024)
+                  • Para fecha actual usar el mes y año actual (NO usar "present", "actual", "current" ni similares)
+                  • MMM = Tres letras de mes con primera mayúscula
+                  • YYYY = Año en 4 dígitos
+                  • Un espacio entre MMM y YYYY
+                - ORDENAMIENTO:
+                  • Education: ordenar por graduationDate descendente
+                  • ProfessionalExperience: ordenar por period.start descendente
+                  • Certifications: ordenar por dateObtained descendente
+                - DATOS:
+                  • NO incluir campos vacíos, nulls o "Not Provided"
+                  • NO incluir arrays vacíos []
+                  • Omitir objetos completos si falta información requerida
+                - INTEGRACIÓN DE COMENTARIOS solo en:
+                  • education: información académica adicional
                   • certifications: nuevas certificaciones
                   • technicalSkills: habilidades mencionadas
                 
-                3. Validación:
-                - JSON debe ser parseable
-                - Sin comentarios/texto extraño
-                - Máxima precisión con datos originales
+                3. Validación ESTRICTA:
+                - JSON debe ser 100% parseable
+                - Sin texto fuera de la estructura JSON
+                - Mantener precisión absoluta con datos originales
+                - Cumplir ESTRICTAMENTE el formato de fechas especificado
+                - Verificar ordenamiento descendente en todas las secciones requeridas
                 
                 CV: %s
                 Comentarios: %s
@@ -53,4 +64,5 @@ public class ChatGPTPromptUtil {
             targetLanguage.toUpperCase(),
             resumeText,
             comments != null ? comments : "Ninguno");
-    }}
+    }
+}
