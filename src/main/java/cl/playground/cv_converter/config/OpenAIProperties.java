@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "openai.api")
+@ConfigurationProperties(prefix = "spring.openai.api")
 public class OpenAIProperties {
     private String key;
     private String model;

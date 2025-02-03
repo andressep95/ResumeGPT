@@ -17,7 +17,7 @@ public class ChatGPTPromptUtil {
                         "graduationDate": "MesAbr AÑO",
                         "achievements": ["string"]
                     }],
-                    "technicalSkills": {"categories": [{"skills": ["string"]}]},
+                    "technicalSkills": {"skills": ["string"]},
                     "professionalExperience": [{
                         "company": "string",
                         "position": "string",

@@ -6,11 +6,18 @@ import java.util.regex.Pattern;
 public class ClearJsonUtil {
 
     public static String cleanJsonResponse(String response) {
+        if (response == null) {
+            return "{}";
+        }
+
         // Eliminar bloques de código markdown si existen
         response = response.replaceAll("```json\\s*", "").replaceAll("```\\s*", "");
 
         // Si el JSON está envuelto en backticks simples, los removemos
         response = response.replaceAll("`", "");
+
+        // 🔹 Eliminar caracteres de control invisibles excepto \n, \t y \r
+        response = response.replaceAll("[\\p{C}&&[^\n\t\r]]", "");
 
         // Eliminar espacios en blanco al inicio y final
         response = response.trim();
@@ -26,4 +33,5 @@ public class ClearJsonUtil {
 
         return response;
     }
+
 }

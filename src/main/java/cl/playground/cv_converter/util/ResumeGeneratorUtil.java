@@ -186,7 +186,7 @@ public class ResumeGeneratorUtil {
     }
 
     private static void addTechnicalSkills(Document document, TechnicalSkills technicalSkills, String language, PdfFont fontHeaderSection, PdfFont fontBody) {
-        if (technicalSkills == null || technicalSkills.getCategories().isEmpty()) {
+        if (technicalSkills == null || technicalSkills.getSkills().isEmpty()) {
             return;
         }
 
@@ -211,9 +211,8 @@ public class ResumeGeneratorUtil {
         Table skillsTable = new Table(4).useAllAvailableWidth();  // Cambiar a 4 columnas
 
         // Recorre las categorías y las habilidades
-        for (SkillCategory category : technicalSkills.getCategories()) {
+        for (String skill : technicalSkills.getSkills()) {
             // Recorre las habilidades dentro de la categoría
-            for (String skill : category.getSkills()) {
                 // Crear el punto con fuente 14
                 Text bullet = new Text("• ")
                     .setFont(fontBody)
@@ -237,10 +236,7 @@ public class ResumeGeneratorUtil {
 
                 // Agregar la celda a la tabla
                 skillsTable.addCell(cell);
-            }
-
         }
-
         document.add(skillsTable);
     }
 

@@ -13,12 +13,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ResumeServiceImpl implements ResumeService {
@@ -38,20 +43,20 @@ public class ResumeServiceImpl implements ResumeService {
         this.openAIProperties = openAIProperties;
     }
 
-
     @Override
     public byte[] processResume(MultipartFile file, String language, String comments) {
         try {
             String langCode = language.toLowerCase().startsWith("es") ? "es" : "en";
-            Resume resume = processResumeData(file, langCode, comments);
+            Resume resume = processResumeData(file, langCode, comments).join();
             return ResumeGeneratorUtil.generateResumePDF(resume, language);
         } catch (Exception e) {
             throw new RuntimeException("Error procesando el CV: " + e.getMessage(), e);
         }
     }
 
+    @Async
     @Override
-    public Resume processResumeData(MultipartFile file, String language, String comments) {
+    public CompletableFuture<Resume> processResumeData(MultipartFile file, String language, String comments) {
         try {
             String extractedText = ResumeExtractorUtil.extractResumeContent(file);
             Map<String, Object> requestBody = createOpenAiRequest(extractedText, language, comments);
@@ -59,15 +64,27 @@ public class ResumeServiceImpl implements ResumeService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            Map<String, Object> response = openAiRestTemplate.postForObject(
-                openAIProperties.getUrl(),
-                new HttpEntity<>(requestBody, headers),
-                Map.class
-                                                                           );
+            ResponseEntity<Map> responseEntity;
+            try {
+                responseEntity = openAiRestTemplate.postForEntity(
+                    openAIProperties.getUrl(),
+                    new HttpEntity<>(requestBody, headers),
+                    Map.class
+                                                                 );
+            } catch (RestClientException ex) {
+                return CompletableFuture.failedFuture(new OpenAIException("Error al comunicarse con OpenAI", ex));
+            }
 
-            return parseOpenAiResponse(response);
+            Map<String, Object> response = responseEntity.getBody();
+            if (response == null) {
+                return CompletableFuture.failedFuture(new OpenAIException("Respuesta vacía de OpenAI"));
+            }
+
+            Resume resume = parseOpenAiResponse(response);
+            return CompletableFuture.completedFuture(resume);
+
         } catch (Exception e) {
-            throw new RuntimeException("Error procesando los datos del CV: " + e.getMessage(), e);
+            return CompletableFuture.failedFuture(new RuntimeException("Error procesando los datos del CV", e));
         }
     }
 
@@ -76,15 +93,13 @@ public class ResumeServiceImpl implements ResumeService {
         requestBody.put("model", openAIProperties.getModel());
         requestBody.put("temperature", openAIProperties.getTemperature());
 
-        Map<String, String> systemMessage = new HashMap<>();
-        systemMessage.put("role", "system");
-        systemMessage.put("content", "Eres un asistente que genera solo respuestas en formato JSON válido, sin marcado adicional ni caracteres de formato.");
+        List<Map<String, String>> messages = List.of(
+            Map.of("role", "system", "content", "Eres un asistente que genera solo respuestas en formato JSON válido," +
+                " sin marcado adicional ni caracteres de formato adicional."),
+            Map.of("role", "user", "content", ChatGPTPromptUtil.createPrompt(extractedText, language, comments))
+                                                    );
 
-        Map<String, String> userMessage = new HashMap<>();
-        userMessage.put("role", "user");
-        userMessage.put("content", ChatGPTPromptUtil.createPrompt(extractedText, language, comments));
-
-        requestBody.put("messages", new Map[]{systemMessage, userMessage});
+        requestBody.put("messages", messages);
         return requestBody;
     }
 
@@ -94,14 +109,16 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         try {
-            Map<String, Object> firstChoice = (Map<String, Object>) ((java.util.List) response.get("choices")).get(0);
+            Map<String, Object> firstChoice = (Map<String, Object>) ((List<?>) response.get("choices")).get(0);
             Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
             String jsonResponse = (String) message.get("content");
 
             String cleanedJson = ClearJsonUtil.cleanJsonResponse(jsonResponse);
+
             return objectMapper.readValue(cleanedJson, Resume.class);
         } catch (Exception e) {
             throw new OpenAIException("Error parseando la respuesta de OpenAI", e);
         }
     }
+
 }

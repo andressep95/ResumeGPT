@@ -14,7 +14,7 @@ public class OpenAIConfig {
         this.openAIProperties = openAIProperties;
     }
 
-    @Bean("openAiRestTemplate") // Nombre único para el bean
+    @Bean("openAiRestTemplate")
     public RestTemplate openAiRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
 

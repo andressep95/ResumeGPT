@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,17 +42,15 @@ class ResumeGeneratorUtilTest {
         );
 
         // Technical Skills
-        SkillCategory programmingSkills = new SkillCategory(
-            Arrays.asList(
+        List<String> programmingSkills = Arrays.asList(
                 "Java", "Spring Boot", "APIs REST", "Microservices",
                 "React", "Angular", "Thymeleaf", "Bootstrap",
                 "PostgreSQL", "MySQL", "Redis", "Docker", "Git", "Scrum"
-                         )
-        );
+                                                     );
 
-        TechnicalSkills technicalSkills = new TechnicalSkills(
-            Collections.singletonList(programmingSkills)
-        );
+        TechnicalSkills technicalSkills = new TechnicalSkills();
+        technicalSkills.setSkills(programmingSkills);
+
 
         // Professional Experience 1
         ProfessionalExperience exp1 = new ProfessionalExperience(

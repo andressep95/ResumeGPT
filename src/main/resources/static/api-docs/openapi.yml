@@ -1,0 +1,43 @@
+openapi: 3.0.1
+info:
+  title: "Resume Converter API"
+  description: "API to convert resumes to a standardized Harvard format with AI."
+  version: "1.0"
+
+servers:
+  - url: "http://localhost:8080"
+    description: "Local Development Server"
+
+paths:
+  /api/v1/resume:
+    post:
+      summary: "Process resume file"
+      description: "Uploads a resume file and converts it to a standardized format."
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "Resume file in PDF format."
+                language:
+                  type: string
+                  description: "Language of the final resume ('es' for Spanish, 'en' for English)."
+                comments:
+                  type: string
+                  description: "Optional comments for modifications in the resume."
+      responses:
+        "200":
+          description: "Successfully converted resume"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResumeDocument"
+        "400":
+          description: "Invalid input provided"
+        "500":
+          description: "Internal server error"

@@ -1,7 +1,7 @@
 package cl.playground.cv_converter.controller;
 
 import cl.playground.cv_converter.service.ResumeService;
-import jakarta.annotation.Resource;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("api/v1/resume")
+@RequestMapping("/api/v1/resume")
 public class ResumeController {
 
     private final ResumeService resumeService;
@@ -21,7 +21,7 @@ public class ResumeController {
         this.resumeService = resumeService;
     }
 
-    @PostMapping(consumes = "multipart/form-data")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> processResume(
         @RequestParam("file")MultipartFile file,
         @RequestParam("language")String language,
@@ -37,5 +37,4 @@ public class ResumeController {
 
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
-
 }
