@@ -65,9 +65,16 @@ public class ChatGPTPromptUtil {
                   - Usar SOLO `MMM YYYY` (Ej: "Feb 2020", "Mar 2024").
                   - Si una fecha no está presente, OMITIR el campo completamente.
                   - Para la fecha actual usar exactamente: "%s".
-                - **Habilidades técnicas:**
-                  - Cada habilidad en `technicalSkills.skills` debe ser una ÚNICA palabra (Ej: "Java", "SQL").
-                  - NO usar frases, guiones o espacios entre palabras.
+                - **Habilidades técnicas (technicalSkills):**
+                  - Cada entrada en `technicalSkills.skills` debe representar UNA habilidad, tecnología o herramienta.
+                  - Se permiten nombres compuestos con mayúsculas y espacios si la tecnología lo requiere (Ej: "Spring Boot", "GitHub Actions").
+                  - NO incluir descripciones largas, solo nombres de tecnologías o herramientas.
+                  - Ejemplos válidos:
+                    ```json
+                    "technicalSkills": {
+                        "skills": ["Java", "Python", "Spring Boot", "GitHub Actions", "Docker"]
+                    }
+                    ```
                 - **Ordenamiento de datos:**
                   - `education` → Ordenar por `graduationDate` descendente.
                   - `professionalExperience` → Ordenar por `period.start` descendente.
@@ -77,7 +84,7 @@ public class ChatGPTPromptUtil {
                   - `certifications`: Nuevas certificaciones.
                   - `technicalSkills`: Habilidades mencionadas.
                 
-                📌 **Validación final:**
+                 **Validación final:**
                 - El JSON debe ser totalmente parseable y sin errores.
                 - No incluir ningún texto fuera de la estructura JSON.
                 - Cumplir ESTRICTAMENTE con los formatos especificados.
