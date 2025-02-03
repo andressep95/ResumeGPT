@@ -14,29 +14,31 @@ public class ChatGPTPromptUtil {
                     "education": [{
                         "institution": "string",
                         "degree": "string",
-                        "graduationDate": "MMM YYYY",
+                        "graduationDate": "string",
                         "achievements": ["string"]
                     }],
                     "technicalSkills": {"skills": ["string"]},
                     "professionalExperience": [{
                         "company": "string",
                         "position": "string",
-                        "period": {"start": "MMM YYYY", "end": "MMM YYYY"},
+                        "period": {"start": "string", "end": "string"},
                         "responsibilities": ["string"],
                         "location": "string"
                     }],
-                    "certifications": [{"name": "string", "dateObtained": "MMM YYYY"}],
+                    "certifications": [{"name": "string", "dateObtained": "string"}],
                     "projects": [{"name": "string", "description": "string", "technologies": ["string"]}]
                 }
                 
                 2. Reglas de contenido OBLIGATORIAS:
-                - Traducir TODO al %s
-                - FORMATO DE FECHAS:
-                  • ÚNICAMENTE formato "MMM YYYY" (Ej: Feb 2020, Mar 2024)
-                  • Para fecha actual usar el mes y año actual (NO usar "present", "actual", "current" ni similares)
+                - Traducir TODO al idioma %s
+                - FORMATO DE FECHAS (todas como string):
+                  • ÚNICAMENTE formato "MMM YYYY" como string (Ej: "Feb 2020", "Mar 2024")
+                  • Las fechas deben ir entre comillas como strings
+                  • Para fecha actual usar el mes y año actual como string (NO usar "present", "actual", "current" ni similares)
                   • MMM = Tres letras de mes con primera mayúscula
                   • YYYY = Año en 4 dígitos
                   • Un espacio entre MMM y YYYY
+                  • Ejemplos válidos: "Ene 2024", "Feb 2023", "Dic 2022"
                 - ORDENAMIENTO:
                   • Education: ordenar por graduationDate descendente
                   • ProfessionalExperience: ordenar por period.start descendente
@@ -51,10 +53,10 @@ public class ChatGPTPromptUtil {
                   • technicalSkills: habilidades mencionadas
                 
                 3. Validación ESTRICTA:
-                - JSON debe ser 100% parseable
+                - JSON debe ser total y estrictamente parseable
                 - Sin texto fuera de la estructura JSON
                 - Mantener precisión absoluta con datos originales
-                - Cumplir ESTRICTAMENTE el formato de fechas especificado
+                - Todas las fechas deben ser strings y cumplir ESTRICTAMENTE el formato especificado
                 - Verificar ordenamiento descendente en todas las secciones requeridas
                 
                 CV: %s
@@ -64,5 +66,4 @@ public class ChatGPTPromptUtil {
             targetLanguage.toUpperCase(),
             resumeText,
             comments != null ? comments : "Ninguno");
-    }
-}
+    }}
