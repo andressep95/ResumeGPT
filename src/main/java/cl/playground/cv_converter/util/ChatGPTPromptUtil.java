@@ -12,82 +12,21 @@ public class ChatGPTPromptUtil {
         String currentDate = getCurrentDate();
 
         return String.format("""
-                Generar un JSON válido en idioma %s usando EXCLUSIVAMENTE datos del CV. 
+                Generar un JSON válido usando EXCLUSIVAMENTE datos del CV.
+                Asegurate de entregar todo traducido al idioma %s
                 
-                 **Reglas estrictas:**
-                - Solo incluir datos presentes en el CV, omitiendo cualquier campo vacío.
-                - NO agregar valores como "Not Provided", `null` o arrays vacíos `[]`.
-                - Mantener precisión absoluta con los datos originales.
+                Reglas:
+                - Solo datos presentes en CV
+                - Omitir campos vacíos
+                - No usar "Not Provided"/null/[]
                 
-                 **Estructura requerida (omitir secciones/objetos vacíos):**
-                ```json
-                {
-                    "header": {
-                        "name": "string",
-                        "contact": {
-                            "email": "string",
-                            "phone": "string"
-                        }
-                    },
-                    "education": [{
-                        "institution": "string",
-                        "degree": "string",
-                        "graduationDate": "string", // Formato "MMM YYYY" (Ej: "Feb 2020")
-                        "achievements": ["string"]
-                    }],
-                    "technicalSkills": {
-                        "skills": ["string"]
-                    },
-                    "professionalExperience": [{
-                        "company": "string",
-                        "position": "string",
-                        "period": {
-                            "start": "string",
-                            "end": "string"
-                        },
-                        "responsibilities": ["string"],
-                        "location": "string"
-                    }],
-                    "certifications": [{
-                        "name": "string",
-                        "dateObtained": "string"
-                    }],
-                    "projects": [{
-                        "name": "string",
-                        "description": "string",
-                        "technologies": ["string"]
-                    }]
-                }
-                ```
+                Estructura: {"header":{"name":"string","contact":{"email":"string","phone":"string"}},"education":[{"institution":"string","degree":"string","graduationDate":"string","achievements":["string"]}],"technicalSkills":{"skills":["string"]},"professionalExperience":[{"company":"string","position":"string","period":{"start":"string","end":"string"},"responsibilities":["string"],"location":"string"}],"certifications":[{"name":"string","dateObtained":"string"}],"projects":[{"name":"string","description":"string","technologies":["string"]}]}
                 
-                 **Reglas de contenido:**
-                - **Formato de fechas:**
-                  - Usar SOLO `MMM YYYY` (Ej: "Feb 2020", "Mar 2024").
-                  - Si una fecha no está presente, OMITIR el campo completamente.
-                  - Para la fecha actual usar exactamente: "%s".
-                - **Habilidades técnicas (technicalSkills):**
-                  - Cada entrada en `technicalSkills.skills` debe representar UNA habilidad, tecnología o herramienta.
-                  - Se permiten nombres compuestos con mayúsculas y espacios si la tecnología lo requiere (Ej: "Spring Boot", "GitHub Actions").
-                  - NO incluir descripciones largas, solo nombres de tecnologías o herramientas.
-                  - Ejemplos válidos:
-                    ```json
-                    "technicalSkills": {
-                        "skills": ["Java", "Python", "Spring Boot", "GitHub Actions", "Docker"]
-                    }
-                    ```
-                - **Ordenamiento de datos:**
-                  - `education` → Ordenar por `graduationDate` descendente.
-                  - `professionalExperience` → Ordenar por `period.start` descendente.
-                  - `certifications` → Ordenar por `dateObtained` descendente.
-                - **Comentarios del usuario** (solo si aplican):
-                  - `education`: Información académica adicional.
-                  - `certifications`: Nuevas certificaciones.
-                  - `technicalSkills`: Habilidades mencionadas.
                 
-                 **Validación final:**
-                - El JSON debe ser totalmente parseable y sin errores.
-                - No incluir ningún texto fuera de la estructura JSON.
-                - Cumplir ESTRICTAMENTE con los formatos especificados.
+                Reglas específicas:
+                - Fechas: MMM YYYY (ej: Feb 2020). Actual: %s
+                - Skills: una por entrada, nombres exactos
+                - Ordenar: education/experience/certs por fecha DESC
                 
                 **CV:** %s
                 **Comentarios:** %s

@@ -11,6 +11,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +26,7 @@ class ResumeServiceImplTest {
 
     @Test
     void testProcessResume_RealIntegration() throws Exception {
-        // 1. Cargar archivo PDF desde classpath
+        // 1. Cargar archivo PDF
         ClassPathResource resource = new ClassPathResource("static/Andres_Sepulveda_CV.pdf");
 
         // 2. Crear MultipartFile
@@ -33,16 +37,50 @@ class ResumeServiceImplTest {
             resource.getInputStream()
         );
 
-        // 3. Procesar CV
-        /*Resume result = resumeService.processResumeData(multipartFile, "ingles", "Test comments");
-        System.out.println(result);
+        // 3. Iniciar medición de tiempo
+        Instant start = Instant.now();
 
-        // 4. Verificaciones
-        assertNotNull(result);
-        assertNotNull(result.getHeader());
-        assertNotNull(result.getHeader().getName());
+        // 4. Procesar CV y esperar resultado
+        CompletableFuture<Resume> futureCv = resumeService.processResumeData(
+            multipartFile,
+            "en",
+            "Testing CV processing with additional skills in: Java, Spring Boot"
+                                                                            );
 
-         */
+        // 5. Obtener resultado con timeout
+        Resume result = futureCv.get(30, TimeUnit.SECONDS);
+
+        // 6. Calcular tiempo transcurrido
+        Duration duration = Duration.between(start, Instant.now());
+        System.out.println("Tiempo total de procesamiento: " + duration.toSeconds() + " segundos");
+
+        // 7. Generar y guardar el PDF
+        byte[] pdfBytes = resumeService.processResume(multipartFile, "en", "Testing CV processing");
+
+        // Crear directorio si no existe
+        Path outputDir = Paths.get("target", "test-output");
+        Files.createDirectories(outputDir);
+
+        // Guardar PDF
+        Path pdfPath = outputDir.resolve("generated_cv_" + System.currentTimeMillis() + ".pdf");
+        Files.write(pdfPath, pdfBytes);
+
+        System.out.println("PDF generado en: " + pdfPath.toAbsolutePath());
+
+        // 8. Verificaciones básicas
+        assertNotNull(result, "El CV no debería ser null");
+        assertTrue(pdfBytes.length > 0, "El PDF generado no debería estar vacío");
+        assertTrue(Files.exists(pdfPath), "El archivo PDF debería existir");
+
+        // 9. Imprimir información del resultado
+        System.out.println("\nInformación del CV procesado:");
+        System.out.println("Nombre: " + result.getHeader().getName());
+        if (result.getProfessionalExperience() != null) {
+            System.out.println("Experiencias profesionales: " + result.getProfessionalExperience().size());
+        }
+        if (result.getTechnicalSkills() != null && result.getTechnicalSkills().getSkills() != null) {
+            System.out.println("Habilidades técnicas: " + result.getTechnicalSkills().getSkills().size());
+        }
     }
 
     @Test
@@ -61,7 +99,7 @@ class ResumeServiceImplTest {
         // 3. Procesar CV y generar PDF
         byte[] pdfResult = resumeService.processResume(
             multipartFile,
-            "es",
+            "en",
             "Tengo una educacion adicional como ingeniero en construccion civil en la Universidad de Oriente " +
                 "culminada en Abril del 2018" +
                 ".\n" +
