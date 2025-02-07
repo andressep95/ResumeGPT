@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: cv-converter
+  servlet:
+    multipart:
+      max-file-size: 5MB
+
+  openai:
+    api:
+      key: ${OPENAI_API_KEY}
+      model: ${OPENAI_API_MODEL}
+      timeout: ${OPENAI_API_TIMEOUT}
+      url: ${OPENAI_API_URL}
+      temperature: ${OPENAI_API_TEMP}
+
+  cors:
+    allowed-origins: ${FRONTEND_URL}
