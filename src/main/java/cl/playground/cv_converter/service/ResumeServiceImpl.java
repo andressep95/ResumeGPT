@@ -10,6 +10,7 @@ import cl.playground.cv_converter.util.ResumeGeneratorUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -46,46 +47,44 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public byte[] processResume(MultipartFile file, String language, String comments) {
         try {
-            String langCode = language.toLowerCase().startsWith("es") ? "es" : "en";
-            Resume resume = processResumeData(file, langCode, comments).join();
-            return ResumeGeneratorUtil.generateResumePDF(resume, language);
+            CompletableFuture<Resume> resumeFuture = processResumeData(file, language, comments);
+            Resume resume = resumeFuture.join();
+
+            return CompletableFuture.supplyAsync(() -> ResumeGeneratorUtil.generateResumePDF(resume, language)).join();
         } catch (Exception e) {
             throw new RuntimeException("Error procesando el CV: " + e.getMessage(), e);
         }
     }
 
     @Async
+    @Cacheable(
+        value = "resumes",
+        key = "#file.hashCode()"
+    )
     @Override
     public CompletableFuture<Resume> processResumeData(MultipartFile file, String language, String comments) {
-        try {
-            String extractedText = ResumeExtractorUtil.extractResumeContent(file);
-            Map<String, Object> requestBody = createOpenAiRequest(extractedText, language, comments);
+        CompletableFuture<String> extractedTextFuture = CompletableFuture.supplyAsync(() ->
+            ResumeExtractorUtil.extractResumeContent(file));
 
+        CompletableFuture<Map<String, Object>> requestBodyFuture = extractedTextFuture.thenApplyAsync(extractedText ->
+            createOpenAiRequest(extractedText, language, comments));
+
+        CompletableFuture<Map<String, Object>> responseFuture = requestBodyFuture.thenApplyAsync(requestBody -> {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            ResponseEntity<Map> responseEntity = openAiRestTemplate.postForEntity(
+                openAIProperties.getUrl(),
+                new HttpEntity<>(requestBody, headers),
+                Map.class);
+            return responseEntity.getBody();
+        });
 
-            ResponseEntity<Map> responseEntity;
-            try {
-                responseEntity = openAiRestTemplate.postForEntity(
-                    openAIProperties.getUrl(),
-                    new HttpEntity<>(requestBody, headers),
-                    Map.class
-                                                                 );
-            } catch (RestClientException ex) {
-                return CompletableFuture.failedFuture(new OpenAIException("Error al comunicarse con OpenAI", ex));
-            }
-
-            Map<String, Object> response = responseEntity.getBody();
+        return responseFuture.thenApplyAsync(response -> {
             if (response == null) {
-                return CompletableFuture.failedFuture(new OpenAIException("Respuesta vacía de OpenAI"));
+                throw new OpenAIException("Respuesta vacía de OpenAI");
             }
-
-            Resume resume = parseOpenAiResponse(response);
-            return CompletableFuture.completedFuture(resume);
-
-        } catch (Exception e) {
-            return CompletableFuture.failedFuture(new RuntimeException("Error procesando los datos del CV", e));
-        }
+            return parseOpenAiResponse(response);
+        });
     }
 
     private Map<String, Object> createOpenAiRequest(String extractedText, String language, String comments) {
