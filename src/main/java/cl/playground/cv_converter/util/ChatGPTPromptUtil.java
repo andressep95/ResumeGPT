@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class ChatGPTPromptUtil {
+    
     public static String createPrompt(String resumeText, String language, String comments) {
         String targetLanguage = "es".equalsIgnoreCase(language) ? "español" : "inglés";
         String currentDate = getCurrentDate();
@@ -71,7 +72,18 @@ public class ChatGPTPromptUtil {
                 - **Las fechas SIEMPRE deben estar en el formato MM YYYY** (ejemplo: 02 2020).
                   Si no hay una fecha específica, omite el campo.
                 - **No uses "Presente" ni "Actual" en lugar de fechas**, usa "MM YYYY" o simplemente no incluyas el campo.
-                - **Skills**: Cada habilidad debe ir como una entrada separada en la lista, respetando su nombre original.
+                - **technicalSkills**:
+                  - Incluir **ÚNICAMENTE** habilidades técnicas específicas como:
+                    - Lenguajes de programación (ej: Java, Python)
+                    - Frameworks/Librerías (ej: Spring, React)
+                    - Herramientas/Plataformas (ej: AWS, Docker, Git)
+                    - Bases de datos (ej: MySQL, MongoDB)
+                    - Sistemas operativos (ej: Linux, Windows)
+                  - **Excluir expresamente**:
+                    - Idiomas (ej: inglés, español, francés)
+                    - Habilidades blandas (ej: trabajo en equipo, comunicación, liderazgo)
+                    - Cursos o certificaciones (deben ir en sus secciones correspondientes)
+                  - Mantener el nombre original de la habilidad tal como aparece en el CV
                 
                 📄 **CV:**
                 %s
@@ -79,9 +91,9 @@ public class ChatGPTPromptUtil {
                 💬 **Comentarios adicionales:** %s
                 """,
             targetLanguage.toUpperCase(),
-            currentDate,
             resumeText,
-            Optional.ofNullable(comments).orElse("Ninguno"));
+            Optional.ofNullable(comments).orElse("Ninguno")
+        );
     }
 
     private static String getCurrentDate() {
