@@ -5,28 +5,78 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class ChatGPTPromptUtil {
-
     public static String createPrompt(String resumeText, String language, String comments) {
         String targetLanguage = "es".equalsIgnoreCase(language) ? "español" : "inglés";
         String currentDate = getCurrentDate();
 
         return String.format("""
-                Generar un JSON válido usando EXCLUSIVAMENTE datos del CV.
-                Asegurate de entregar todo traducido al idioma %s
+                Genera un JSON válido usando EXCLUSIVAMENTE los datos presentes en el CV.
+                Toda la información debe ser traducida completamente al idioma %s.
                 
-                REGLAS:
-                - Solo datos presentes en CV
-                - Omitir campos vacíos
-                - No usar "Not Provided"/null/[]
+                REGLAS GENERALES:
+                - No inventes información.
+                - No incluyas valores nulos, vacíos, "Not Provided", [], {}, null.
+                - Usa el formato exacto requerido en cada campo.
                 
-                Estructura: {"header":{"name":"string","contact":{"email":"string","phone":"string"}},"education":[{"institution":"string","degree":"string","graduationDate":"string","achievements":["string"]}],"technicalSkills":{"skills":["string"]},"professionalExperience":[{"company":"string","position":"string","period":{"start":"string","end":"string"},"responsibilities":["string"],"location":"string"}],"certifications":[{"name":"string","dateObtained":"string"}],"projects":[{"name":"string","description":"string","technologies":["string"]}]}
+                📌 FORMATO ESPERADO OBLIGATORIO:
+                ```json
+                {
+                  "header": {
+                    "name": "string",
+                    "contact": {
+                      "email": "string",
+                      "phone": "string"
+                    }
+                  },
+                  "education": [
+                    {
+                      "institution": "string",
+                      "degree": "string",
+                      "graduationDate": "MM YYYY",
+                      "achievements": ["string"]
+                    }
+                  ],
+                  "technicalSkills": {
+                    "skills": ["string"]
+                  },
+                  "professionalExperience": [
+                    {
+                      "company": "string",
+                      "position": "string",
+                      "period": {
+                        "start": "MM YYYY",
+                        "end": "MM YYYY"
+                      },
+                      "responsibilities": ["string"],
+                      "location": "string"
+                    }
+                  ],
+                  "certifications": [
+                    {
+                      "name": "string",
+                      "dateObtained": "MM YYYY"
+                    }
+                  ],
+                  "projects": [
+                    {
+                      "name": "string",
+                      "description": "string",
+                      "technologies": ["string"]
+                    }
+                  ]
+                }
+                ```
                 
-                REGLAS ESPECIFICAS:
-                - Fechas: MM YYYY (ej: 02 2020). Actual: %s
-                - Skills: una por entrada, nombres exactos
+                **REGLAS ESPECÍFICAS**:
+                - **Las fechas SIEMPRE deben estar en el formato MM YYYY** (ejemplo: 02 2020).
+                  Si no hay una fecha específica, omite el campo.
+                - **No uses "Presente" ni "Actual" en lugar de fechas**, usa "MM YYYY" o simplemente no incluyas el campo.
+                - **Skills**: Cada habilidad debe ir como una entrada separada en la lista, respetando su nombre original.
                 
-                **CV:** %s
-                **Comentarios:** %s
+                📄 **CV:**
+                %s
+                
+                💬 **Comentarios adicionales:** %s
                 """,
             targetLanguage.toUpperCase(),
             currentDate,
@@ -39,5 +89,4 @@ public class ChatGPTPromptUtil {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM yyyy");
         return now.format(formatter);
     }
-
 }

@@ -78,7 +78,7 @@ public class SortJsonData {
 
     private static String convertDateToSortableFormat(String date) {
         if (date == null || date.trim().isEmpty()) {
-            return DEFAULT_INVALID_DATE;
+            return getCurrentMonthAndYear();
         }
 
         // Normaliza la fecha si es "Present" o "Presente"
