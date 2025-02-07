@@ -11,12 +11,12 @@ public class ChatGPTPromptUtil {
 
         return String.format("""
                 Genera un JSON válido usando EXCLUSIVAMENTE los datos presentes en el CV.
-                Toda la información debe ser traducida completamente al idioma %s.
+                Toda la RESPUESTA debe ser en IDIOMA %s.
                 
                 REGLAS GENERALES:
-                - No inventes información.
-                - No incluyas valores nulos, vacíos, "Not Provided", [], {}, null.
-                - Usa el formato exacto requerido en cada campo.
+                - NO inventes información.
+                - NO incluyas valores nulos, vacíos, "Not Provided", [], {}, null.
+                - Usa el formato EXACTO requerido en cada campo.
                 
                 📌 FORMATO ESPERADO OBLIGATORIO:
                 ```json
