@@ -44,7 +44,7 @@ class ResumeServiceImplTest {
         CompletableFuture<Resume> futureCv = resumeService.processResumeData(
             multipartFile,
             "en",
-            "Testing CV processing with additional skills in: Java, Spring Boot"
+            "Testing CV processing with additional skills in: Java, Spring Boot y JHipster"
                                                                             );
 
         // 5. Obtener resultado con timeout

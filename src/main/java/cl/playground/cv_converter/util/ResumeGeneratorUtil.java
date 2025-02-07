@@ -11,6 +11,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
+import org.springdoc.core.converters.models.Sort;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,6 +44,8 @@ public class ResumeGeneratorUtil {
     }
 
     public static byte[] generateResumePDF(Resume resume, String language) {
+        SortJsonData.sortData(resume, language);
+
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(baos);
             PdfDocument pdf = new PdfDocument(writer);
