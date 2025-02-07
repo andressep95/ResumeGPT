@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class SortJsonData {
 
-    private static final String DEFAULT_INVALID_DATE = "000000";
+    private static final String DEFAULT_INVALID_DATE = getCurrentMonthAndYear();
     private static final Set<String> PRESENT_KEYWORDS = new HashSet<>(Arrays.asList("present", "presente"));
     private static final DateTimeFormatter INPUT_FORMATTER = DateTimeFormatter.ofPattern("MM yyyy");
     private static final DateTimeFormatter OUTPUT_FORMATTER = DateTimeFormatter.ofPattern("yyyyMM");
@@ -78,7 +78,7 @@ public class SortJsonData {
 
     private static String convertDateToSortableFormat(String date) {
         if (date == null || date.trim().isEmpty()) {
-            return getCurrentMonthAndYear();
+            return DEFAULT_INVALID_DATE;
         }
 
         // Normaliza la fecha si es "Present" o "Presente"

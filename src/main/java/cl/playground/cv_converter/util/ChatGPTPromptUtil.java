@@ -12,7 +12,7 @@ public class ChatGPTPromptUtil {
 
         return String.format("""
                 Genera un JSON válido usando EXCLUSIVAMENTE los datos presentes en el CV.
-                Toda la RESPUESTA debe ser en IDIOMA %s.
+                Toda la RESPUESTA debe ser en IDIOMA %s SIN EXCEPCION EN NINGUNA PALABRA NI CONTENIDO.
                 
                 REGLAS GENERALES:
                 - NO inventes información.
