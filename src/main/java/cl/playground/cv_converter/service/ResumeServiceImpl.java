@@ -3,10 +3,7 @@ package cl.playground.cv_converter.service;
 import cl.playground.cv_converter.config.OpenAIProperties;
 import cl.playground.cv_converter.exception.OpenAIException;
 import cl.playground.cv_converter.model.Resume;
-import cl.playground.cv_converter.util.ChatGPTPromptUtil;
-import cl.playground.cv_converter.util.ClearJsonUtil;
-import cl.playground.cv_converter.util.ResumeExtractorUtil;
-import cl.playground.cv_converter.util.ResumeGeneratorUtil;
+import cl.playground.cv_converter.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -93,7 +89,9 @@ public class ResumeServiceImpl implements ResumeService {
         requestBody.put("temperature", openAIProperties.getTemperature());
 
         List<Map<String, String>> messages = List.of(
-            Map.of("role", "system", "content", "Eres un asistente que genera solo respuestas en formato JSON válido, sin marcado adicional ni caracteres de formato adicional."),
+            Map.of("role", "system", "content", StaticsPrompts.SYSTEM_CONTEXT),
+            Map.of("role", "system", "content", StaticsPrompts.EXAMPLE_OUTPUT),
+            Map.of("role", "system", "content", StaticsPrompts.VALIDATION_INSTRUCTIONS),
             Map.of("role", "user", "content", ChatGPTPromptUtil.createPrompt(extractedText, language, comments))
                                                     );
 

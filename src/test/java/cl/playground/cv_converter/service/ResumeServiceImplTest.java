@@ -43,7 +43,7 @@ class ResumeServiceImplTest {
         // 4. Procesar CV y esperar resultado
         CompletableFuture<Resume> futureCv = resumeService.processResumeData(
             multipartFile,
-            "en",
+            "es",
             "Testing CV processing with additional skills in: Java, Spring Boot y JHipster"
                                                                             );
 
@@ -55,7 +55,7 @@ class ResumeServiceImplTest {
         System.out.println("Tiempo total de procesamiento: " + duration.toSeconds() + " segundos");
 
         // 7. Generar y guardar el PDF
-        byte[] pdfBytes = resumeService.processResume(multipartFile, "en", "Testing CV processing");
+        byte[] pdfBytes = resumeService.processResume(multipartFile, "es", "Testing CV processing");
 
         // Crear directorio si no existe
         Path outputDir = Paths.get("target", "test-output");
